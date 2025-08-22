@@ -164,95 +164,93 @@ elif uploaded_relatorio_file is not None and uploaded_formulario_file is not Non
 st.header("Criação da Tabela Final")
 df_final = pd.DataFrame()
 if not PREPARO_ETL.empty:
-    st.write("--- Criando o DataFrame Final ---")
+    # Usa um formulário para agrupar os inputs e evitar re-execução a cada mudança
+    with st.form(key="parametros_finais"):
+        st.write("Informe os parâmetros para gerar a tabela final:")
 
-    # Solicita o número inicial da sequência
-    nu_seq_trans_inicio = st.number_input("Digite o número inicial da sequência para 'nu-seq-trans':", min_value=0, value=888888, step=1)
+        # Solicita o número inicial da sequência
+        nu_seq_trans_inicio = st.number_input("Informe o número inicial da sequência para 'nu-seq-trans':", min_value=0, value=888888, step=1)
 
-    # Solicita o tipo de atualização
-    tipo_atualizacao_input = st.radio("Digite o tipo de atualização:", ('I', 'S'), horizontal=True)
+        # Solicita o tipo de atualização
+        tipo_atualizacao_input = st.radio("Selecione o tipo de atualização:", ('I', 'S'), horizontal=True)
 
+        # Solicita a carga horária
+        carga_horaria_input = st.radio("Selecione a carga horária:", ('060', '018'), horizontal=True)
 
-    # Solicita a carga horária
-    carga_horaria_input = st.radio("Digite a carga horária:", ('060', '018'), horizontal=True)
+        # Botão para submeter o formulário e iniciar o processamento
+        submitted = st.form_submit_button("Gerar Tabela Final")
 
+    if submitted:
+        # Criação do novo DataFrame
+        df_final = pd.DataFrame()
 
-    # Criação do novo DataFrame
-    df_final = pd.DataFrame()
+        # Popula as colunas conforme os requisitos
+        df_final['nu-seq-trans'] = range(nu_seq_trans_inicio, nu_seq_trans_inicio + len(PREPARO_ETL))
+        df_final['cod-trans'] = '181'
+        df_final['cod-mod-trans'] = '07'
+        df_final['codusu'] = PREPARO_ETL['CPF'] # Continua usando o CPF numérico para esta coluna
+        df_final['uf-or-trans'] = 'SA'
+        df_final['uf-orig-transm'] = 'SA'
+        df_final['uf-des-transm'] = 'BR'
+        df_final['cond-trans'] = '0'
+        df_final['tam-trans'] = '152'
+        df_final['cod-ret-trans'] = '00'
 
-    # Popula as colunas conforme os requisitos
-    df_final['nu-seq-trans'] = range(nu_seq_trans_inicio, nu_seq_trans_inicio + len(PREPARO_ETL))
-    df_final['cod-trans'] = '181'
-    df_final['cod-mod-trans'] = '07'
-    df_final['codusu'] = PREPARO_ETL['CPF'] # Continua usando o CPF numérico para esta coluna
-    df_final['uf-or-trans'] = 'SA'
-    df_final['uf-orig-transm'] = 'SA'
-    df_final['uf-des-transm'] = 'BR'
-    df_final['cond-trans'] = '0'
-    df_final['tam-trans'] = '152'
-    df_final['cod-ret-trans'] = '00'
+        # Calcula o dia juliano
+        hoje = datetime.date.today()
+        dia_juliano_hoje = hoje.timetuple().tm_yday
+        df_final['dia-juliano'] = dia_juliano_hoje
 
-    # Calcula o dia juliano
-    hoje = datetime.date.today()
-    dia_juliano_hoje = hoje.timetuple().tm_yday
-    df_final['dia-juliano'] = dia_juliano_hoje
+        df_final['tipo-chave'] = '2'
+        df_final['numero-cnh'] = PREPARO_ETL['numero-cnh']
+        df_final['tipo-evento'] = 'C'
+        df_final['tipo-atualizacao'] = tipo_atualizacao_input
+        df_final['codigo-curso'] = '04'
+        df_final['modalidade'] = '2'
 
-    df_final['tipo-chave'] = '2'
-    df_final['numero-cnh'] = PREPARO_ETL['numero-cnh']
-    df_final['tipo-evento'] = 'C'
-    df_final['tipo-atualizacao'] = tipo_atualizacao_input
-    df_final['codigo-curso'] = '04'
-    df_final['modalidade'] = '2'
+        # Gera o número do certificado
+        df_final['Numero Certificado'] = [f'escola{i:09d}' for i in range(1, len(PREPARO_ETL) + 1)]
 
-    # Gera o número do certificado
-    df_final['Numero Certificado'] = [f'escola{i:09d}' for i in range(1, len(PREPARO_ETL) + 1)]
+        df_final['data-inicio-curso'] = PREPARO_ETL['data-inicio-curso']
+        df_final['data-fim-curso'] = PREPARO_ETL['data-fim-curso']
+        df_final['carga-horaria'] = carga_horaria_input
+        df_final['cnpj-entidade-crede'] = '394494000560'
+        df_final['cpf-instrutor'] = '57437670097'
+        df_final['municipio-curso'] = '9701'
+        df_final['uf-curso'] = 'DF'
 
-    df_final['data-inicio-curso'] = PREPARO_ETL['data-inicio-curso']
-    df_final['data-fim-curso'] = PREPARO_ETL['data-fim-curso']
-    df_final['carga-horaria'] = carga_horaria_input
-    df_final['cnpj-entidade-crede'] = '394494000560'
-    df_final['cpf-instrutor'] = '57437670097'
-    df_final['municipio-curso'] = '9701'
-    df_final['uf-curso'] = 'DF'
+        # Calcula a data de validade (acrescenta 5 anos)
+        df_final['data-inicio-curso_dt'] = pd.to_datetime(df_final['data-inicio-curso'], format='%Y%m%d', errors='coerce')
+        df_final['data-validade'] = (df_final['data-inicio-curso_dt'] + pd.DateOffset(years=5)).dt.strftime('%Y%m%d').fillna('')
+        df_final = df_final.drop(columns=['data-inicio-curso_dt']) # Remove a coluna temporária
 
-    # Calcula a data de validade (acrescenta 5 anos)
-    # Converte a coluna 'data-inicio-curso' para datetime para realizar o cálculo
-    df_final['data-inicio-curso_dt'] = pd.to_datetime(df_final['data-inicio-curso'], format='%Y%m%d', errors='coerce')
-    df_final['data-validade'] = (df_final['data-inicio-curso_dt'] + pd.DateOffset(years=5)).dt.strftime('%Y%m%d').fillna('')
-    df_final = df_final.drop(columns=['data-inicio-curso_dt']) # Remove a coluna temporária
+        df_final['categoria'] = PREPARO_ETL['categoria'].str.ljust(4) # Garante 4 caracteres com espaços à direita
+        df_final['observacoes-curso'] = '99                  ' # 99 seguido de 18 espaços para totalizar 20
 
-    df_final['categoria'] = PREPARO_ETL['categoria'].str.ljust(4) # Garante 4 caracteres com espaços à direita
-    df_final['observacoes-curso'] = '99                  ' # 99 seguido de 18 espaços para totalizar 20
+        st.success("Tabela final gerada com sucesso!")
+        st.write("\nPrévia da tabela final:")
+        st.dataframe(df_final.head())
 
-    # Remove a coluna CPF_Original antes de exibir e salvar
-    # df_final = df_final.drop(columns=['CPF_Original']) # Comentado para manter a coluna no DataFrame final conforme discussão anterior
+        # --- Opção para baixar o CSV final ---
+        st.header("Download da Tabela Final")
+        csv_final_content = df_final.to_csv(index=False, sep=';').encode('utf-8')
+        st.download_button(
+            label="Baixar PREPARO_ETL_FINAL.csv",
+            data=csv_final_content,
+            file_name='PREPARO_ETL_FINAL.csv',
+            mime='text/csv',
+            key='download_final_etl'
+        )
 
-    st.write("\nPrévia da tabela final:")
-    st.dataframe(df_final.head())
+        # --- Verificação de CPFs que começam com '0' ---
+        st.header("Verificação de CPFs que começam com '0'")
+        cpfs_com_zero = df_final[df_final['codusu'].astype(str).str.startswith('0')]
 
-    # --- Opção para baixar o CSV final ---
-    st.header("Download da Tabela Final")
-    csv_final_content = df_final.to_csv(index=False, sep=';').encode('utf-8')
-    st.download_button(
-        label="Baixar PREPARO_ETL_FINAL.csv",
-        data=csv_final_content,
-        file_name='PREPARO_ETL_FINAL.csv',
-        mime='text/csv',
-        key='download_final_etl'
-    )
-    st.write("Tabela final gerada e disponível para download.")
-
-    # --- Verificação de CPFs que começam com '0' ---
-    st.header("Verificação de CPFs que começam com '0'")
-    # Verificar na coluna 'codusu' que contém o CPF sem formatação
-    cpfs_com_zero = df_final[df_final['codusu'].astype(str).str.startswith('0')]
-
-    if not cpfs_com_zero.empty:
-        st.write("Foram encontrados CPFs (numéricos) que começam com '0' na tabela final:")
-        # Exibir apenas a coluna 'codusu' já que 'CPF_Original' foi removida ou não
-        st.dataframe(cpfs_com_zero[['codusu']]) # Exibe apenas 'codusu' conforme última correção
-    else:
-        st.write("Não foram encontrados CPFs (numéricos) que começam com '0' na tabela final.")
+        if not cpfs_com_zero.empty:
+            st.write("Foram encontrados CPFs (numéricos) que começam com '0' na tabela final:")
+            st.dataframe(cpfs_com_zero[['codusu']])
+        else:
+            st.write("Não foram encontrados CPFs (numéricos) que começam com '0' na tabela final.")
 
 
 else:
