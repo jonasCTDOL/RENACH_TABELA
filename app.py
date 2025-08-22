@@ -185,7 +185,6 @@ if not PREPARO_ETL.empty:
     df_final['cod-trans'] = '181'
     df_final['cod-mod-trans'] = '07'
     df_final['codusu'] = PREPARO_ETL['CPF'] # Continua usando o CPF numérico para esta coluna
-    df_final['CPF_Original'] = PREPARO_ETL['CPF_Original'] # Adiciona a coluna com o CPF original
     df_final['uf-or-trans'] = 'SA'
     df_final['uf-orig-transm'] = 'SA'
     df_final['uf-des-transm'] = 'BR'
