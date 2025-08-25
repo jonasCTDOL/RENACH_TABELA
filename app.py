@@ -98,11 +98,13 @@ def process_formulario_cadastro(uploaded_file):
 
             # numero-cnh - somente números
             # Utiliza a coluna 'QUESTÃO 1 - Informe o número da CNH:' e remove caracteres não numéricos
-            df_novo_cadastro['numero-cnh'] = df_formulario_cadastro['QUESTÃO 1 - Informe o número da CNH:'].astype(str).str.replace(r'\D', '', regex=True)
+            # df_novo_cadastro['numero-cnh'] = df_formulario_cadastro['QUESTÃO 1 - Informe o número da CNH:'].astype(str).str.replace(r'\D', '', regex=True)
+            df_novo_cadastro['numero-cnh'] = df_formulario_cadastro['Nº Registro da CNH:'].astype(str).str.replace(r'\D', '', regex=True)
 
             # categoria - celula com 4 campos sendo a letra da categoria e preenchimento com espaço
             # Utiliza a coluna 'QUESTÃO 2 - Selecione a categoria da CNH:' e preenche com espaços até 4 caracteres
-            df_novo_cadastro['categoria'] = df_formulario_cadastro['QUESTÃO 2 - Selecione a categoria da CNH:'].astype(str).str.ljust(4)
+            # df_novo_cadastro['categoria'] = df_formulario_cadastro['QUESTÃO 2 - Selecione a categoria da CNH:'].astype(str).str.ljust(4)
+            df_novo_cadastro['categoria'] = df_formulario_cadastro['Categoria da CNH:'].astype(str).str.ljust(4)
 
             st.write("Prévia da nova tabela (CPF, numero-cnh, categoria):")
             st.dataframe(df_novo_cadastro.head())
