@@ -174,10 +174,10 @@ if not PREPARO_ETL.empty:
         nu_seq_trans_inicio = st.number_input("Informe o número inicial da sequência para 'nu-seq-trans':", min_value=0, value=888888, step=1)
 
         # Solicita o tipo de atualização
-        tipo_atualizacao_input = st.radio("Selecione o tipo de atualização:", ('I', 'S'), horizontal=True)
+        tipo_atualizacao_input = st.radio("Selecione o tipo de atualização: Sendo I para inclusão e S substituição do registro", ('I', 'S'), horizontal=True)
 
         # Solicita a carga horária
-        carga_horaria_input = st.radio("Selecione a carga horária:", ('060', '018'), horizontal=True)
+        carga_horaria_input = st.radio("Selecione a carga horária:", ('060', '018','040'), horizontal=True)
 
         # Botão para submeter o formulário e iniciar o processamento
         submitted = st.form_submit_button("Gerar Tabela Final")
