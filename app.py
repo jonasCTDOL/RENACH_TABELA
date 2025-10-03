@@ -310,6 +310,6 @@ if not PREPARO_ETL.empty:
 
 else:
     if uploaded_relatorio_file is not None and uploaded_formulario_file is not None:
-        st.warning("Não foi possível criar o DataFrame final. Verifique os arquivos de entrada e as condições de mesclagem.")
+        st.warning("Uma ou ambas as tabelas carregadas resultaram vazias após o processamento. Verifique os arquivos de entrada.")
     else:
         st.info("Carregue os arquivos CSV para iniciar o processamento.")
