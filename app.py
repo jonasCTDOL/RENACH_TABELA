@@ -281,7 +281,8 @@ if not PREPARO_ETL.empty:
         # Explicitly convert to string for display in Streamlit just before displaying
         df_final_display = df_final.copy()
         # Force 'cod-mod-trans' to be displayed as '7'
-        df_final_display['cod-mod-trans'] = df_final_display['cod-mod-trans'].astype(str).str.replace('07', '7') # Add this line to explicitly remove leading zero for display
+        # This line was already added in the previous turn, keeping it for clarity
+        df_final_display['cod-mod-trans'] = df_final_display['cod-mod-trans'].astype(str).str.replace('07', '7')
 
         st.dataframe(df_final_display.head()) # Display the modified copy
 
