@@ -246,7 +246,7 @@ if not PREPARO_ETL.empty:
         # --- Formatação das colunas para o CSV final ---
         df_final['nu-seq-trans'] = df_final['nu-seq-trans'].astype(str).str.zfill(6)
         df_final['cod-trans'] = df_final['cod-trans'].astype(str).str.zfill(3)
-        df_final['cod-mod-trans'] = df_final['cod-mod-trans'].astype(str) # Removed .str.zfill(1)
+        df_final['cod-mod-trans'] = df_final['cod-mod-trans'].astype(str) # Ensure it's treated as a string, not a number
         df_final['codusu'] = df_final['codusu'].astype(str).str.zfill(11)
         df_final['uf-or-trans'] = df_final['uf-or-trans'].astype(str).str.ljust(2)
         df_final['uf-orig-transm'] = df_final['uf-orig-transm'].astype(str).str.ljust(2)
