@@ -208,7 +208,7 @@ if not PREPARO_ETL.empty:
         df_final['uf-orig-transm'] = 'SA'
         df_final['uf-des-transm'] = 'BR'
         df_final['cond-trans'] = '0'
-        df_final['tam-trans'] = '152'
+        df_final['tam-trans'] = '0152'# 4 digitos
         df_final['cod-ret-trans'] = '00'
 
         # Calcula o dia juliano
@@ -217,7 +217,7 @@ if not PREPARO_ETL.empty:
         df_final['dia-juliano'] = dia_juliano_hoje
 
         df_final['tipo-chave'] = '2'
-        df_final['numero-cnh'] = PREPARO_ETL['numero-cnh']
+        df_final['numero-cnh'] = PREPARO_ETL['numero-cnh'].str.zfill(11)
         df_final['tipo-evento'] = 'C'
         df_final['tipo-atualizacao'] = tipo_atualizacao_input
         df_final['codigo-curso'] = '04'
