@@ -273,10 +273,14 @@ if not PREPARO_ETL.empty:
         df_final['categoria'] = df_final['categoria'].astype(str).str.ljust(4)
         df_final['observacoes-curso'] = df_final['observacoes-curso'].astype(str).str.ljust(20)
 
+        # Explicitly convert to string for display in Streamlit just before displaying
+        df_final_display = df_final.copy()
+        df_final_display['cod-mod-trans'] = df_final_display['cod-mod-trans'].astype(str)
+
 
         st.success("Tabela final gerada com sucesso!")
         st.write("\nPrévia da tabela final:")
-        st.dataframe(df_final.head())
+        st.dataframe(df_final_display.head()) # Display the modified copy
 
         # --- Opção para baixar o CSV final ---
         st.header("Download da Tabela Final")
