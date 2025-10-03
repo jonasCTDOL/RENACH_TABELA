@@ -248,7 +248,7 @@ if not PREPARO_ETL.empty:
         df_final['nu-seq-trans'] = df_final['nu-seq-trans'].astype(str).str.zfill(6)
         df_final['cod-trans'] = df_final['cod-trans'].astype(str).str.zfill(3)
         # Keep it as a string '7', no zfill needed
-        df_final['cod-mod-trans'] = df_final['cod-mod-trans'].astype(str)
+        df_final['cod-mod-trans'] = '7' # Explicitly set to '7' string
         df_final['codusu'] = df_final['codusu'].astype(str).str.zfill(11)
         df_final['uf-or-trans'] = df_final['uf-or-trans'].astype(str).str.ljust(2)
         df_final['uf-orig-transm'] = df_final['uf-orig-transm'].astype(str).str.ljust(2)
