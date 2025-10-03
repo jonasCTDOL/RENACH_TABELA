@@ -31,7 +31,7 @@ def process_relatorio_curso(uploaded_file):
 
             # Salva a tabela de registros com menos de 5 dias em um arquivo CSV temporário para download
             if not df_menos_5_dias.empty:
-                csv_menos_5_dias_content = df_menos_5_dias.to_csv(index=False, sep=';').encode('utf-8')
+                csv_menos_5_dias_content = df_menos_5_dias.to_csv(index=False, sep=',').encode('utf-8')
                 st.download_button(
                     label="Baixar ALUNOS_CURSO_MENOS_5.csv",
                     data=csv_menos_5_dias_content,
@@ -248,7 +248,7 @@ if not PREPARO_ETL.empty:
 
         # --- Opção para baixar o CSV final ---
         st.header("Download da Tabela Final")
-        csv_final_content = df_final.to_csv(index=False, sep=';').encode('utf-8')
+        csv_final_content = df_final.to_csv(index=False, sep=',').encode('utf-8')
         st.download_button(
             label="Baixar PREPARO_ETL_FINAL.csv",
             data=csv_final_content,
