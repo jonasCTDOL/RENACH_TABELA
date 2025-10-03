@@ -247,7 +247,7 @@ if not PREPARO_ETL.empty:
         # --- Formatação das colunas para o CSV final ---
         df_final['nu-seq-trans'] = df_final['nu-seq-trans'].astype(str).str.zfill(6)
         df_final['cod-trans'] = df_final['cod-trans'].astype(str).str.zfill(3)
-        # Explicitly set to '7' string and keep it that way
+        # Explicitly ensure it's a string '7' here for the final output
         df_final['cod-mod-trans'] = '7'
         df_final['codusu'] = df_final['codusu'].astype(str).str.zfill(11)
         df_final['uf-or-trans'] = df_final['uf-or-trans'].astype(str).str.ljust(2)
@@ -280,7 +280,9 @@ if not PREPARO_ETL.empty:
         st.write("\nPrévia da tabela final:")
         # Explicitly convert to string for display in Streamlit just before displaying
         df_final_display = df_final.copy()
-        df_final_display['cod-mod-trans'] = df_final_display['cod-mod-trans'].astype(str)
+        # Force 'cod-mod-trans' to be displayed as '7'
+        df_final_display['cod-mod-trans'] = df_final_display['cod-mod-trans'].astype(str).str.replace('07', '7') # Add this line to explicitly remove leading zero for display
+
         st.dataframe(df_final_display.head()) # Display the modified copy
 
         # --- Opção para baixar o CSV final ---
@@ -308,6 +310,6 @@ if not PREPARO_ETL.empty:
 
 else:
     if uploaded_relatorio_file is not None and uploaded_formulario_file is not None:
-        st.warning("Uma ou ambas as tabelas carregadas resultaram vazias após o processamento. Verifique os arquivos de entrada.")
+        st.warning("Não foi possível criar o DataFrame final. Verifique os arquivos de entrada e as condições de mesclagem.")
     else:
         st.info("Carregue os arquivos CSV para iniciar o processamento.")
