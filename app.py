@@ -196,13 +196,14 @@ if not PREPARO_ETL.empty:
         submitted = st.form_submit_button("Gerar Tabela Final")
 
     if submitted:
+        # --- Início da montagem da tabela final para download ---
         # Criação do novo DataFrame
         df_final = pd.DataFrame()
 
         # Popula as colunas conforme os requisitos
         df_final['nu-seq-trans'] = range(nu_seq_trans_inicio, nu_seq_trans_inicio + len(PREPARO_ETL))
         df_final['cod-trans'] = '181'
-        df_final['cod-mod-trans'] = '07'
+        df_final['cod-mod-trans'] = '7' # Modified to '7'
         df_final['codusu'] = PREPARO_ETL['CPF'] # Continua usando o CPF numérico para esta coluna
         df_final['uf-or-trans'] = 'SA'
         df_final['uf-orig-transm'] = 'SA'
@@ -229,7 +230,7 @@ if not PREPARO_ETL.empty:
         df_final['data-inicio-curso'] = PREPARO_ETL['data-inicio-curso']
         df_final['data-fim-curso'] = PREPARO_ETL['data-fim-curso']
         df_final['carga-horaria'] = carga_horaria_input
-        df_final['cnpj-entidade-crede'] = '394494000560'
+        df_final['cnpj-entidade-crede'] = '00394494000560'
         df_final['cpf-instrutor'] = '57437670097'
         df_final['municipio-curso'] = '9701'
         df_final['uf-curso'] = 'DF'
@@ -241,6 +242,37 @@ if not PREPARO_ETL.empty:
 
         df_final['categoria'] = PREPARO_ETL['categoria'].str.ljust(4) # Garante 4 caracteres com espaços à direita
         df_final['observacoes-curso'] = '99                  ' # 99 seguido de 18 espaços para totalizar 20
+
+        # --- Formatação das colunas para o CSV final ---
+        df_final['nu-seq-trans'] = df_final['nu-seq-trans'].astype(str).str.zfill(6)
+        df_final['cod-trans'] = df_final['cod-trans'].astype(str).str.zfill(3)
+        df_final['cod-mod-trans'] = df_final['cod-mod-trans'].astype(str).str.zfill(1)
+        df_final['codusu'] = df_final['codusu'].astype(str).str.zfill(11)
+        df_final['uf-or-trans'] = df_final['uf-or-trans'].astype(str).str.ljust(2)
+        df_final['uf-orig-transm'] = df_final['uf-orig-transm'].astype(str).str.ljust(2)
+        df_final['uf-des-transm'] = df_final['uf-des-transm'].astype(str).str.ljust(2)
+        df_final['cond-trans'] = df_final['cond-trans'].astype(str).str.zfill(1)
+        df_final['tam-trans'] = df_final['tam-trans'].astype(str).str.zfill(4)
+        df_final['cod-ret-trans'] = df_final['cod-ret-trans'].astype(str).str.zfill(2)
+        df_final['dia-juliano'] = df_final['dia-juliano'].astype(str).str.zfill(3)
+        df_final['tipo-chave'] = df_final['tipo-chave'].astype(str).str.zfill(1)
+        df_final['numero-cnh'] = df_final['numero-cnh'].astype(str).str.zfill(10)
+        df_final['tipo-evento'] = df_final['tipo-evento'].astype(str).str.ljust(1)
+        df_final['tipo-atualizacao'] = df_final['tipo-atualizacao'].astype(str).str.ljust(1)
+        df_final['codigo-curso'] = df_final['codigo-curso'].astype(str).str.zfill(2)
+        df_final['modalidade'] = df_final['modalidade'].astype(str).str.zfill(1)
+        df_final['Numero Certificado'] = df_final['Numero Certificado'].astype(str).str.ljust(15)
+        df_final['data-inicio-curso'] = df_final['data-inicio-curso'].astype(str).str.ljust(8) # Datas já devem estar em YYYYMMDD ou vazio
+        df_final['data-fim-curso'] = df_final['data-fim-curso'].astype(str).str.ljust(8) # Datas já devem estar em YYYYMMDD ou vazio
+        df_final['carga-horaria'] = df_final['carga-horaria'].astype(str).str.zfill(3)
+        df_final['cnpj-entidade-crede'] = df_final['cnpj-entidade-crede'].astype(str).str.zfill(14)
+        df_final['cpf-instrutor'] = df_final['cpf-instrutor'].astype(str).str.zfill(11)
+        df_final['municipio-curso'] = df_final['municipio-curso'].astype(str).str.zfill(5)
+        df_final['uf-curso'] = df_final['uf-curso'].astype(str).str.ljust(2)
+        df_final['data-validade'] = df_final['data-validade'].astype(str).str.ljust(8) # Data já deve estar em YYYYMMDD ou vazio
+        df_final['categoria'] = df_final['categoria'].astype(str).str.ljust(4)
+        df_final['observacoes-curso'] = df_final['observacoes-curso'].astype(str).str.ljust(20)
+
 
         st.success("Tabela final gerada com sucesso!")
         st.write("\nPrévia da tabela final:")
@@ -259,6 +291,7 @@ if not PREPARO_ETL.empty:
 
         # --- Verificação de CPFs que começam com '0' ---
         st.header("Verificação de CPFs que começam com '0'")
+        # Usa a coluna 'codusu' que já foi formatada com zeros à esquerda, se necessário
         cpfs_com_zero = df_final[df_final['codusu'].astype(str).str.startswith('0')]
 
         if not cpfs_com_zero.empty:
