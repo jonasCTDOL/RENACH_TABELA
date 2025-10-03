@@ -203,7 +203,8 @@ if not PREPARO_ETL.empty:
         # Popula as colunas conforme os requisitos
         df_final['nu-seq-trans'] = range(nu_seq_trans_inicio, nu_seq_trans_inicio + len(PREPARO_ETL))
         df_final['cod-trans'] = '181'
-        df_final['cod-mod-trans'] = '7' # Modified to '7'
+        # Ensure it's a string '7' from the start
+        df_final['cod-mod-trans'] = '7'
         df_final['codusu'] = PREPARO_ETL['CPF'] # Continua usando o CPF numérico para esta coluna
         df_final['uf-or-trans'] = 'SA'
         df_final['uf-orig-transm'] = 'SA'
@@ -246,7 +247,8 @@ if not PREPARO_ETL.empty:
         # --- Formatação das colunas para o CSV final ---
         df_final['nu-seq-trans'] = df_final['nu-seq-trans'].astype(str).str.zfill(6)
         df_final['cod-trans'] = df_final['cod-trans'].astype(str).str.zfill(3)
-        df_final['cod-mod-trans'] = df_final['cod-mod-trans'].astype(str) # Ensure it's treated as a string, not a number
+        # Keep it as a string '7', no zfill needed
+        df_final['cod-mod-trans'] = df_final['cod-mod-trans'].astype(str)
         df_final['codusu'] = df_final['codusu'].astype(str).str.zfill(11)
         df_final['uf-or-trans'] = df_final['uf-or-trans'].astype(str).str.ljust(2)
         df_final['uf-orig-transm'] = df_final['uf-orig-transm'].astype(str).str.ljust(2)
@@ -275,6 +277,7 @@ if not PREPARO_ETL.empty:
 
         # Explicitly convert to string for display in Streamlit just before displaying
         df_final_display = df_final.copy()
+        # Ensure 'cod-mod-trans' is a string '7' in the display copy
         df_final_display['cod-mod-trans'] = df_final_display['cod-mod-trans'].astype(str)
 
 
